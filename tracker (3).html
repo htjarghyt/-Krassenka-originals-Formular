@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V1Tracker — FormulaR</title>
+<style>
+:root{--red:#e10600;--bg:#0a0d12;--card:#12171f;--line:#ffffff1c;--mut:#8e99a7;--ink:#f3f4f6;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#1b2635,var(--bg) 60%);color:var(--ink);font:500 15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+h1{margin:0;font-size:22px;letter-spacing:1px}h1 b{color:var(--red)}h2{margin:0 0 10px;font-size:15px;letter-spacing:1.4px;text-transform:uppercase;color:#aab4c1}
+button,input{font:inherit;color:#fff;border-radius:8px;border:1px solid #ffffff2a;background:#1c222c;padding:9px 14px;min-height:40px}button{cursor:pointer;font-weight:700}button.p{background:var(--red);border-color:var(--red)}button.sm{min-height:30px;padding:3px 10px;font-size:13px}button.d{border-color:#ff6b5e66;color:#ff9a8f}
+input{width:100%}label{display:block;margin:10px 0 4px;color:var(--mut);font-size:13px}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 14px 60px}.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.top .sp{flex:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.login{max-width:440px;margin:8vh auto 0}.msg{min-height:22px;margin-top:10px;color:#9ed8ff;font-size:14px}.msg.bad{color:#ff7a7a}
+.tabs{display:flex;gap:6px;margin-bottom:14px}.tabs button.on{background:var(--red);border-color:var(--red)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:16px}.stat{padding:14px 16px}.stat small{color:var(--mut);letter-spacing:1.2px;text-transform:uppercase;font-size:11px}.stat b{display:block;font-size:34px;line-height:1.15;margin-top:2px}.stat span{color:var(--mut);font-size:12px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tools input{max-width:300px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:980px}th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;font-size:14px}th{color:var(--mut);font-size:11px;letter-spacing:1.2px;text-transform:uppercase;background:#0e1319;cursor:pointer;user-select:none}tr:last-child td{border-bottom:0}td.m{color:var(--mut)}td.a{display:flex;gap:6px}
+.ok{color:#7fd69a}
+tbody tr[data-u]:hover td{background:#ffffff0a}button.ic{min-height:28px;padding:2px 8px;font-size:15px;line-height:1}.nm{display:flex;align-items:center;gap:6px}.ttl{display:inline-block;padding:1px 8px;border-radius:99px;border:1px solid #ffffff33;background:#ffffff12;font-size:11px;font-weight:800;letter-spacing:.08em}.ttl.dev{background:var(--red);border-color:var(--red)}.gl{display:flex;flex-wrap:wrap;gap:8px}.gk{display:flex;align-items:center;gap:6px;margin:0;padding:6px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;color:var(--ink)}input.ck{width:auto;min-height:0;margin:0}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#e5484d;box-shadow:0 0 6px #e5484d99;flex:none}.dot.on{background:#3ddc84;box-shadow:0 0 6px #3ddc84aa}.gr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line)}.gr select{width:auto;min-height:30px;padding:2px 8px;font-size:13px}.gr input.dt{width:auto;min-height:30px}.gr small{color:var(--mut,#8b95a5);min-width:120px}.gs{position:relative}.gs input{width:230px;min-height:36px}#gsl{position:absolute;top:100%;left:0;z-index:40;width:330px;max-width:90vw;background:var(--card,#12171f);border:1px solid var(--line);border-radius:10px;margin-top:4px;overflow:hidden}#gsl div{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;color:var(--ink)}#gsl div:hover,#gsl div.sel{background:#ffffff14}#gsl small{color:#8b95a5;margin-left:auto}
+#pv{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.8)}#pv.open{display:flex}
+#pv .pp{width:min(860px,100%);max-height:calc(100vh - 28px);overflow:auto;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--red);border-radius:14px;padding:18px}
+#pv .ph{display:flex;align-items:center;gap:12px;margin-bottom:12px}#pv .av{width:46px;height:46px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px}#pv .ph small{display:block;color:var(--mut)}#pv .ph .sp{flex:1}
+#pv .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}#pv .c2{background:#ffffff08;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}#pv .c2 b{display:block;font-size:26px;line-height:1.1}#pv .c2 span{font-size:10px;letter-spacing:.12em;color:var(--mut);text-transform:uppercase}
+#pv table{min-width:0}#pv th,#pv td{text-align:right;cursor:default}#pv th:first-child,#pv td:first-child{text-align:left}.empty{padding:26px;text-align:center;color:var(--mut)}
+pre{margin:0;max-height:420px;overflow:auto;background:#080b10;border:1px solid var(--line);border-radius:10px;padding:12px;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace;color:#cfd8e3;white-space:pre}
+ol{padding-left:22px;display:grid;gap:8px}code{background:#ffffff14;padding:1px 6px;border-radius:5px;font-size:13px}.hide{display:none!important}
+.tabs{flex-wrap:wrap}.chartw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:#0e1319;margin-top:10px}.leg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mut)}.leg b{color:var(--ink)}.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+#tip{position:fixed;top:10px;right:10px;z-index:60;min-width:190px;padding:10px 12px;border-radius:12px;background:rgba(8,11,16,.96);border:1px solid var(--line);border-top:3px solid var(--red);box-shadow:0 10px 30px #000a;display:none;pointer-events:none}#tip.on{display:block}
+#tip .tt{font-weight:800;margin-bottom:6px}#tip .tr{display:flex;align-items:center;gap:8px;font-size:14px;padding:1px 0}#tip .tr i{width:10px;height:10px;border-radius:50%}#tip .tr span{flex:1;color:var(--mut)}#tip .tr b{font-variant-numeric:tabular-nums}#tip .tr.off{opacity:.35}
+.lgd{position:absolute;top:6px;left:50px;z-index:2;display:flex;flex-wrap:wrap;gap:4px 10px;max-width:calc(100% - 60px);padding:4px 8px;border-radius:8px;background:#0a0d12cc;border:1px solid var(--line);font-size:11px;color:var(--mut)}.lgd span{cursor:pointer;display:flex;align-items:center;gap:5px}.lgd span.off{opacity:.35;text-decoration:line-through}.lgd i{width:14px;height:3px;border-radius:2px}
+.chartw{overflow:hidden}
+</style></head><body><div id="tip"></div><div class="wrap">
+
+<div id="loginView" class="card login">
+ <h1>FORMULA<b>R</b> · V1TRACKER</h1><div style="color:var(--mut);margin-top:4px">Private owner dashboard</div>
+ <label for="cUrl">Project URL</label><input id="cUrl" value="https://nhwupxwycbnwqgntbnnb.supabase.co" placeholder="https://xxxx.supabase.co" autocomplete="off" spellcheck="false">
+ <label for="cKey">Public (anon / publishable) key</label><input id="cKey" value="sb_publishable_-9nvlNbGpvEYQAr19FEVtw_xgEH2PAS" placeholder="sb_publishable_… or eyJ…" autocomplete="off" spellcheck="false">
+ <label for="cPw">Admin password</label><input id="cPw" type="password" autocomplete="current-password">
+ <div style="display:flex;gap:8px;margin-top:14px"><button class="p" id="goBtn" style="flex:1">OPEN DASHBOARD</button><button id="setupBtn">SETUP GUIDE</button></div>
+ <div class="msg" id="lMsg"></div>
+</div>
+
+<div id="appView" class="hide">
+ <div class="top"><div class="gs"><input id="gq" placeholder="🔍 Search accounts…" autocomplete="off" spellcheck="false"><div id="gsl" hidden></div></div><h1>FORMULA<b>R</b> · V1TRACKER</h1><span class="sp"></span><span id="upd" style="color:var(--mut);font-size:13px"></span><button class="sm" id="refBtn">REFRESH</button><button class="sm" id="outBtn">LOCK</button></div>
+ <div class="tabs"><button id="t1" class="on">DASHBOARD</button><button id="t2">SETUP GUIDE</button></div>
+ <div id="dash">
+  <div class="stats" id="stats"></div>
+  <div class="card" style="margin-bottom:16px"><h2>Activity</h2><div class="tabs" id="rtabs"></div><div class="leg" id="leg"></div><div class="chartw" id="chart"></div><div class="msg" id="aMsg"></div></div>
+  <div class="card"><h2>Accounts</h2><div class="tools"><input id="q" placeholder="Search username or email…"><span style="color:var(--mut);font-size:13px;align-self:center">Tap 👤 to open an account's data, 🎁 to gift titles</span><button class="sm" id="csvBtn">EXPORT CSV</button></div><div class="tw"><table><thead><tr id="thead"></tr></thead><tbody id="tbody"></tbody></table></div></div>
+ </div>
+ <div id="setup" class="hide"></div>
+</div>
+
+<div id="pv" role="dialog" aria-modal="true"><div class="pp" id="pvBody"></div></div>
+<template id="setupTpl">
+ <div class="card"><h2>One-time setup (about 10 minutes, free)</h2>
+ <ol>
+  <li>Create a free account at <b>supabase.com</b> and make a <b>New project</b> (any name, choose a region near your players, save the database password somewhere).</li>
+  <li>Open <b>SQL Editor → New query</b>, paste the code below, first <b>change <code>CHANGE-THIS-ADMIN-PASSWORD</code></b> to your own long admin password, then press <b>Run</b>. You should see "Success".</li>
+  <li>Open <b>Project Settings → API</b>. Copy the <b>Project URL</b> and the <b>anon / publishable key</b>. (Never use the "service_role" / secret key.)</li>
+  <li>Paste those two values into the <code>BACKEND</code> line near the top of the account script in <b>U1.html</b> (search for <code>FILL IN</code>), then host U1.html on a website (see the multiplayer steps).</li>
+  <li>Already set up before? Press <b>COPY UPGRADE ONLY</b> and run it once in the SQL Editor to switch on the lifetime / yearly / monthly / daily / hourly graphs (it never touches your admin password).</li>
+  <li>Host this V1Tracker.html on any free static host (Netlify Drop, Cloudflare Pages, GitHub Pages). Open it, enter the same URL + key and your admin password.</li>
+ </ol>
+ <div style="margin:12px 0 8px;display:flex;gap:8px"><button class="sm p" id="copySql">COPY SQL</button><button class="sm" id="copyUp">COPY UPGRADE ONLY (existing project)</button></div>
+ <pre id="sqlBox"></pre></div>
+</template>
+
+<script>
+const SQL="-- ===== FormulaR backend setup (run ONCE in Supabase: SQL Editor > New query > paste > Run) =====\n-- Before running: change CHANGE-THIS-ADMIN-PASSWORD below to your own long admin password.\ncreate extension if not exists pgcrypto with schema extensions;\n\ncreate table if not exists public.fr_users(\n  id uuid primary key default gen_random_uuid(),\n  username text unique not null,\n  display_name text not null,\n  email text not null,\n  pw text not null,\n  created_at timestamptz not null default now(),\n  last_login timestamptz,\n  logins int not null default 0,\n  last_seen timestamptz,\n  progress jsonb,\n  progress_updated timestamptz\n);\ncreate unique index if not exists fr_users_email_uq on public.fr_users (lower(email));\ncreate table if not exists public.fr_sessions(\n  token text primary key,\n  user_id uuid not null references public.fr_users(id) on delete cascade,\n  created_at timestamptz not null default now()\n);\ncreate table if not exists public.fr_counters(k text primary key, n bigint not null default 0);\ninsert into public.fr_counters(k,n) values ('guests',0) on conflict do nothing;\ncreate table if not exists public.fr_admin(id int primary key default 1, pw text not null);\ninsert into public.fr_admin(id,pw) values (1, extensions.crypt('CHANGE-THIS-ADMIN-PASSWORD', extensions.gen_salt('bf')))\n  on conflict (id) do update set pw = excluded.pw;\n\n-- Nobody can touch the tables directly; the game and tracker only use the functions below.\nalter table public.fr_users enable row level security;\nalter table public.fr_sessions enable row level security;\nalter table public.fr_counters enable row level security;\nalter table public.fr_admin enable row level security;\nrevoke all on public.fr_users, public.fr_sessions, public.fr_counters, public.fr_admin from anon, authenticated;\n\n-- internal helpers (not callable from the internet)\ncreate or replace function public.fr_uid(p_token text) returns uuid\nlanguage sql security definer set search_path = public, extensions as $$\n  select user_id from public.fr_sessions where token = p_token and created_at > now() - interval '90 days' limit 1\n$$;\ncreate or replace function public.fr_mk_session(p_uid uuid) returns text\nlanguage plpgsql security definer set search_path = public, extensions as $$\ndeclare v_t text := encode(gen_random_bytes(32),'hex');\nbegin\n  insert into public.fr_sessions(token,user_id) values (v_t,p_uid);\n  delete from public.fr_sessions where created_at < now() - interval '90 days';\n  return v_t;\nend $$;\ncreate or replace function public.fr_admin_ok(p_admin text) returns boolean\nlanguage plpgsql security definer set search_path = public, extensions as $$\ndeclare v_ok boolean;\nbegin\n  select (pw = extensions.crypt(coalesce(p_admin,''), pw)) into v_ok from public.fr_admin where id = 1;\n  if not coalesce(v_ok,false) then perform pg_sleep(0.6); end if;\n  return coalesce(v_ok,false);\nend $$;\nrevoke all on function public.fr_uid(text), public.fr_mk_session(uuid), public.fr_admin_ok(text) from public, anon, authenticated;\n\n-- ===== functions used by the game =====\ncreate or replace function public.fr_signup(p_user text, p_email text, p_hash text) returns json\nlanguage plpgsql security definer set search_path = public, extensions as $$\ndeclare v_u text := lower(trim(coalesce(p_user,''))); v_e text := trim(coalesce(p_email,'')); v_id uuid;\nbegin\n  if v_u !~ '^[a-z0-9_]{3,20}$' then return json_build_object('ok',false,'err','Username must be 3-20 letters, numbers or underscores.'); end if;\n  if v_e !~* '^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$' or length(v_e) > 120 then return json_build_object('ok',false,'err','Enter a valid email address.'); end if;\n  if coalesce(p_hash,'') !~ '^[0-9a-f]{64}$' then return json_build_object('ok',false,'err','Invalid password data.'); end if;\n  if exists (select 1 from public.fr_users where username = v_u) then return json_build_object('ok',false,'err','That username is already taken.'); end if;\n  if exists (select 1 from public.fr_users where lower(email) = lower(v_e)) then return json_build_object('ok',false,'err','That email is already registered.'); end if;\n  insert into public.fr_users(username,display_name,email,pw,last_login,logins,last_seen)\n    values (v_u, trim(p_user), v_e, extensions.crypt(p_hash, extensions.gen_salt('bf')), now(), 1, now()) returning id into v_id;\n  return json_build_object('ok',true,'token',public.fr_mk_session(v_id),'name',trim(p_user),'user',v_u);\nend $$;\n\ncreate or replace function public.fr_login(p_user text, p_hash text) returns json\nlanguage plpgsql security definer set search_path = public, extensions as $$\ndeclare r public.fr_users%rowtype;\nbegin\n  select * into r from public.fr_users where username = lower(trim(coalesce(p_user,'')));\n  if not found or r.pw <> extensions.crypt(coalesce(p_hash,''), r.pw) then\n    perform pg_sleep(0.6);\n    return json_build_object('ok',false,'err','Wrong username or password.');\n  end if;\n  update public.fr_users set last_login = now(), last_seen = now(), logins = logins + 1 where id = r.id;\n  return json_build_object('ok',true,'token',public.fr_mk_session(r.id),'name',r.display_name,'user',r.username,'progress',r.progress);\nend $$;\n\ncreate or replace function public.fr_save(p_token text, p_progress jsonb) returns json\nlanguage plpgsql security definer set search_path = public, extensions as $$\ndeclare v_uid uuid := public.fr_uid(p_token);\nbegin\n  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;\n  if octet_length(p_progress::text) > 3000000 then return json_build_object('ok',false,'err','Progress data too large.'); end if;\n  update public.fr_users set progress = p_progress, progress_updated = now(), last_seen = now() where id = v_uid;\n  return json_build_object('ok',true);\nend $$;\n\ncreate or replace function public.fr_load(p_token text) returns json\nlanguage plpgsql security definer set search_path = public, extensions as $$\ndeclare v_uid uuid := public.fr_uid(p_token); v_p jsonb;\nbegin\n  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;\n  select progress into v_p from public.fr_users where id = v_uid;\n  return json_build_object('ok',true,'progress',v_p);\nend $$;\n\ncreate or replace function public.fr_logout(p_token text) returns json\nlanguage plpgsql security definer set search_path = public, extensions as $$\nbegin\n  delete from public.fr_sessions where token = p_token;\n  return json_build_object('ok',true);\nend $$;\n\n-- guests: just a number going up by one, nothing else is stored\ncreate or replace function public.fr_guest() returns json\nlanguage plpgsql security definer set search_path = public, extensions as $$\nbegin\n  update public.fr_counters set n = n + 1 where k = 'guests';\n  return json_build_object('ok',true);\nend $$;\n\n-- ===== functions used by V1Tracker (need the admin password) =====\ncreate or replace function public.fr_admin_stats(p_admin text) returns json\nlanguage plpgsql security definer set search_path = public, extensions as $$\ndeclare v_g bigint; v_u json;\nbegin\n  if not public.fr_admin_ok(p_admin) then return json_build_object('ok',false,'err','Wrong admin password.'); end if;\n  select n into v_g from public.fr_counters where k = 'guests';\n  select coalesce(json_agg(x order by x.created_at desc),'[]'::json) into v_u from (\n    select username, display_name, email, created_at, last_login, logins, last_seen, progress_updated,\n           coalesce(octet_length(progress::text),0) as progress_bytes\n    from public.fr_users) x;\n  return json_build_object('ok',true,'guests',v_g,'users',v_u);\nend $$;\n\ncreate or replace function public.fr_admin_delete_user(p_admin text, p_user text) returns json\nlanguage plpgsql security definer set search_path = public, extensions as $$\nbegin\n  if not public.fr_admin_ok(p_admin) then return json_build_object('ok',false,'err','Wrong admin password.'); end if;\n  delete from public.fr_users where username = lower(trim(p_user));\n  return json_build_object('ok',true);\nend $$;\n\ncreate or replace function public.fr_admin_reset_pw(p_admin text, p_user text, p_hash text) returns json\nlanguage plpgsql security definer set search_path = public, extensions as $$\ndeclare v_id uuid;\nbegin\n  if not public.fr_admin_ok(p_admin) then return json_build_object('ok',false,'err','Wrong admin password.'); end if;\n  if coalesce(p_hash,'') !~ '^[0-9a-f]{64}$' then return json_build_object('ok',false,'err','Invalid password data.'); end if;\n  update public.fr_users set pw = extensions.crypt(p_hash, extensions.gen_salt('bf')) where username = lower(trim(p_user)) returning id into v_id;\n  if v_id is null then return json_build_object('ok',false,'err','No such user.'); end if;\n  delete from public.fr_sessions where user_id = v_id;\n  return json_build_object('ok',true);\nend $$;\n\n-- allow the public website key to call only the intended functions\nrevoke all on function public.fr_signup(text,text,text), public.fr_login(text,text), public.fr_save(text,jsonb), public.fr_load(text),\n  public.fr_logout(text), public.fr_guest(), public.fr_admin_stats(text), public.fr_admin_delete_user(text,text),\n  public.fr_admin_reset_pw(text,text,text) from public;\ngrant execute on function public.fr_signup(text,text,text), public.fr_login(text,text), public.fr_save(text,jsonb), public.fr_load(text),\n  public.fr_logout(text), public.fr_guest(), public.fr_admin_stats(text), public.fr_admin_delete_user(text,text),\n  public.fr_admin_reset_pw(text,text,text) to anon;\n";
+const $=i=>document.getElementById(i),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let CFG={url:'',key:''},ADMIN='',DATA=null,sortK='created_at',sortD=-1,timer=null;
+try{const c=JSON.parse(localStorage.getItem('v1t_cfg')||'{}');$('cUrl').value=c.url||$('cUrl').value;$('cKey').value=c.key||$('cKey').value}catch(e){}
+async function rpc(fn,args){const h={'Content-Type':'application/json',apikey:CFG.key};if(/^eyJ/.test(CFG.key))h.Authorization='Bearer '+CFG.key;
+ const r=await fetch(CFG.url.replace(/\/+$/,'')+'/rest/v1/rpc/'+fn,{method:'POST',headers:h,body:JSON.stringify(args)});if(!r.ok)throw new Error('Server error '+r.status+' — did the SQL setup finish?');return r.json()}
+async function hashPw(user,pw){const enc=new TextEncoder(),km=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']);
+ const bits=await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:enc.encode('formularr:v1:'+user.trim().toLowerCase()),iterations:120000},km,256);return[...new Uint8Array(bits)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+function showSetup(){$('setup').innerHTML=$('setupTpl').innerHTML;$('sqlBox').textContent=SQL+'\n'+UP;$('copySql').onclick=e=>cp(e.target,SQL+'\n'+UP);$('copyUp').onclick=e=>cp(e.target,UP)}
+$('setupBtn').onclick=()=>{$('loginView').classList.add('hide');$('appView').classList.remove('hide');tab(2)};
+function tab(n){$('t1').classList.toggle('on',n==1);$('t2').classList.toggle('on',n==2);$('dash').classList.toggle('hide',n!=1);$('setup').classList.toggle('hide',n!=2);if(n==2)showSetup();if(!ADMIN&&n==2){$('outBtn').textContent='BACK'}}
+$('t1').onclick=()=>{if(ADMIN)tab(1)};$('t2').onclick=()=>tab(2);
+$('outBtn').onclick=()=>{ADMIN='';DATA=null;clearInterval(timer);$('appView').classList.add('hide');$('loginView').classList.remove('hide');$('cPw').value='';$('outBtn').textContent='LOCK';$('lMsg').textContent=''};
+$('goBtn').onclick=login;$('cPw').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+async function login(){CFG={url:$('cUrl').value.trim(),key:$('cKey').value.trim()};const m=$('lMsg');m.className='msg';
+ if(!CFG.url||!CFG.key||!$('cPw').value){m.textContent='Fill in all three fields.';m.className='msg bad';return}
+ m.textContent='Connecting…';ADMIN=$('cPw').value;
+ try{const r=await rpc('fr_admin_stats',{p_admin:ADMIN});if(!r.ok){ADMIN='';m.textContent=r.err||'Login failed.';m.className='msg bad';return}
+  localStorage.setItem('v1t_cfg',JSON.stringify(CFG));$('loginView').classList.add('hide');$('appView').classList.remove('hide');tab(1);apply(r);loadSeries();timer=setInterval(refresh,30000)}
+ catch(e){ADMIN='';m.textContent=e.message;m.className='msg bad'}}
+async function refresh(){if(!ADMIN)return;try{const r=await rpc('fr_admin_stats',{p_admin:ADMIN});if(r.ok){apply(r);loadSeries()}}catch(e){$('upd').textContent='Connection problem — retrying'}}
+$('refBtn').onclick=refresh;
+const UP=String.raw`-- ===== V1Tracker graph upgrade (run ONCE; safe for existing projects; does not touch the admin password) =====
+create table if not exists public.fr_events(id bigserial primary key, t timestamptz not null default now(), kind text not null check (kind in ('signup','login','guest')));
+create index if not exists fr_events_t on public.fr_events(t);
+alter table public.fr_events enable row level security;
+revoke all on public.fr_events from anon, authenticated;
+do $$ begin
+  if not exists (select 1 from public.fr_events) then
+    insert into public.fr_events(t,kind) select created_at,'signup' from public.fr_users;
+    insert into public.fr_events(t,kind) select last_login,'login' from public.fr_users where logins > 1 and last_login is not null;
+  end if;
+end $$;
+
+create or replace function public.fr_signup(p_user text, p_email text, p_hash text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_u text := lower(trim(coalesce(p_user,''))); v_e text := trim(coalesce(p_email,'')); v_id uuid;
+begin
+  if v_u !~ '^[a-z0-9_]{3,20}$' then return json_build_object('ok',false,'err','Username must be 3-20 letters, numbers or underscores.'); end if;
+  if v_e !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' or length(v_e) > 120 then return json_build_object('ok',false,'err','Enter a valid email address.'); end if;
+  if coalesce(p_hash,'') !~ '^[0-9a-f]{64}$' then return json_build_object('ok',false,'err','Invalid password data.'); end if;
+  if exists (select 1 from public.fr_users where username = v_u) then return json_build_object('ok',false,'err','That username is already taken.'); end if;
+  if exists (select 1 from public.fr_users where lower(email) = lower(v_e)) then return json_build_object('ok',false,'err','That email is already registered.'); end if;
+  insert into public.fr_users(username,display_name,email,pw,last_login,logins,last_seen)
+    values (v_u, trim(p_user), v_e, extensions.crypt(p_hash, extensions.gen_salt('bf')), now(), 1, now()) returning id into v_id;
+  insert into public.fr_events(kind) values ('signup');
+  return json_build_object('ok',true,'token',public.fr_mk_session(v_id),'name',trim(p_user),'user',v_u);
+end $$;
+
+create or replace function public.fr_login(p_user text, p_hash text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare r public.fr_users%rowtype;
+begin
+  select * into r from public.fr_users where username = lower(trim(coalesce(p_user,'')));
+  if not found or r.pw <> extensions.crypt(coalesce(p_hash,''), r.pw) then
+    perform pg_sleep(0.6);
+    return json_build_object('ok',false,'err','Wrong username or password.');
+  end if;
+  update public.fr_users set last_login = now(), last_seen = now(), logins = logins + 1 where id = r.id;
+  insert into public.fr_events(kind) values ('login');
+  return json_build_object('ok',true,'token',public.fr_mk_session(r.id),'name',r.display_name,'user',r.username,'progress',r.progress,'titles',public.fr_active_titles(r.titles,r.title_exp));
+end $$;
+
+create or replace function public.fr_guest() returns json
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  update public.fr_counters set n = n + 1 where k = 'guests';
+  insert into public.fr_events(kind) values ('guest');
+  return json_build_object('ok',true);
+end $$;
+
+create or replace function public.fr_admin_series(p_admin text, p_unit text, p_since timestamptz, p_tz text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_tz text := p_tz;
+begin
+  if not public.fr_admin_ok(p_admin) then return json_build_object('ok',false,'err','Wrong admin password.'); end if;
+  if p_unit not in ('hour','day','month','year') then return json_build_object('ok',false,'err','Bad unit.'); end if;
+  if v_tz is null or not exists (select 1 from pg_timezone_names where name = v_tz) then v_tz := 'UTC'; end if;
+  return json_build_object('ok',true,'first',(select min(t) from public.fr_events),'rows',(
+    select coalesce(json_agg(r order by r.b),'[]'::json) from (
+      select to_char(date_trunc(p_unit, t at time zone v_tz),'YYYY-MM-DD"T"HH24:MI') as b,
+        count(*) filter (where kind='signup') as signups,
+        count(*) filter (where kind='login') as logins,
+        count(*) filter (where kind='guest') as guests,
+        count(*) filter (where kind='logout') as logouts,
+        count(*) filter (where kind='delete') as deletes,
+        count(*) filter (where kind='reset') as resets
+      from public.fr_events where p_since is null or t >= p_since group by 1) r));
+end $$;
+revoke all on function public.fr_admin_series(text,text,timestamptz,text) from public;
+grant execute on function public.fr_admin_series(text,text,timestamptz,text) to anon;
+
+-- more event kinds for the line graph: logouts, deletes, password resets
+alter table public.fr_events drop constraint if exists fr_events_kind_check;
+alter table public.fr_events add constraint fr_events_kind_check check (kind in ('signup','login','guest','logout','delete','reset'));
+
+create or replace function public.fr_logout(p_token text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if exists (select 1 from public.fr_sessions where token = p_token) then insert into public.fr_events(kind) values ('logout'); end if;
+  update public.fr_users set last_seen = now() - interval '1 hour', presence = null where id = public.fr_uid(p_token);
+  delete from public.fr_sessions where token = p_token;
+  return json_build_object('ok',true);
+end $$;
+
+create or replace function public.fr_admin_delete_user(p_admin text, p_user text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if not public.fr_admin_ok(p_admin) then return json_build_object('ok',false,'err','Wrong admin password.'); end if;
+  if exists (select 1 from public.fr_users where username = lower(trim(p_user))) then insert into public.fr_events(kind) values ('delete'); end if;
+  delete from public.fr_users where username = lower(trim(p_user));
+  return json_build_object('ok',true);
+end $$;
+
+create or replace function public.fr_admin_reset_pw(p_admin text, p_user text, p_hash text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_id uuid;
+begin
+  if not public.fr_admin_ok(p_admin) then return json_build_object('ok',false,'err','Wrong admin password.'); end if;
+  if coalesce(p_hash,'') !~ '^[0-9a-f]{64}$' then return json_build_object('ok',false,'err','Invalid password data.'); end if;
+  update public.fr_users set pw = extensions.crypt(p_hash, extensions.gen_salt('bf')) where username = lower(trim(p_user)) returning id into v_id;
+  if v_id is null then return json_build_object('ok',false,'err','No such user.'); end if;
+  delete from public.fr_sessions where user_id = v_id;
+  insert into public.fr_events(kind) values ('reset');
+  return json_build_object('ok',true);
+end $$;
+
+-- player profile viewer: lets the tracker read one player's saved progress (needs the admin password)
+create or replace function public.fr_admin_progress(p_admin text, p_user text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_p jsonb; v_n text;
+begin
+  if not public.fr_admin_ok(p_admin) then return json_build_object('ok',false,'err','Wrong admin password.'); end if;
+  select progress, display_name into v_p, v_n from public.fr_users where username = lower(trim(p_user));
+  if v_n is null then return json_build_object('ok',false,'err','No such user.'); end if;
+  return json_build_object('ok',true,'name',v_n,'progress',v_p);
+end $$;
+revoke all on function public.fr_admin_progress(text,text) from public;
+grant execute on function public.fr_admin_progress(text,text) to anon;
+
+-- ===== titles (temporary / revocable), friends, presence =====
+create extension if not exists pg_trgm with schema extensions;
+alter table public.fr_users add column if not exists titles jsonb not null default '[]'::jsonb;
+alter table public.fr_users add column if not exists title_exp jsonb not null default '{}'::jsonb;
+alter table public.fr_users add column if not exists presence jsonb;
+
+create or replace function public.fr_active_titles(p_t jsonb, p_e jsonb) returns jsonb
+language sql stable set search_path = public as $$
+  select coalesce(jsonb_agg(x.v), '[]'::jsonb) from jsonb_array_elements_text(coalesce(p_t,'[]'::jsonb)) as x(v)
+  where coalesce((coalesce(p_e,'{}'::jsonb) ->> x.v)::timestamptz, 'infinity'::timestamptz) > now()
+$$;
+
+create or replace function public.fr_titles(p_token text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_uid uuid := public.fr_uid(p_token); v_t jsonb;
+begin
+  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;
+  select public.fr_active_titles(titles,title_exp) into v_t from public.fr_users where id = v_uid;
+  return json_build_object('ok',true,'titles',coalesce(v_t,'[]'::jsonb));
+end $$;
+
+create or replace function public.fr_admin_stats(p_admin text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_g bigint; v_u json;
+begin
+  if not public.fr_admin_ok(p_admin) then return json_build_object('ok',false,'err','Wrong admin password.'); end if;
+  select n into v_g from public.fr_counters where k = 'guests';
+  select coalesce(json_agg(x order by x.created_at desc),'[]'::json) into v_u from (
+    select username, display_name, email, created_at, last_login, logins, last_seen, progress_updated,
+           public.fr_active_titles(titles,title_exp) as titles, title_exp, coalesce(last_seen > now() - interval '45 seconds', false) as online,
+           coalesce(octet_length(progress::text),0) as progress_bytes
+    from public.fr_users) x;
+  return json_build_object('ok',true,'guests',v_g,'users',v_u);
+end $$;
+
+drop function if exists public.fr_admin_set_titles(text,text,jsonb);
+create or replace function public.fr_admin_set_titles(p_admin text, p_user text, p_titles jsonb, p_exp jsonb) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_id uuid;
+begin
+  if not public.fr_admin_ok(p_admin) then return json_build_object('ok',false,'err','Wrong admin password.'); end if;
+  p_exp := coalesce(p_exp,'{}'::jsonb);
+  if p_titles is null or jsonb_typeof(p_titles) <> 'array' or jsonb_array_length(p_titles) > 12 or jsonb_typeof(p_exp) <> 'object'
+     or exists (select 1 from jsonb_array_elements(p_titles) e where jsonb_typeof(e) <> 'string' or length(e #>> '{}') not between 1 and 24) then
+    return json_build_object('ok',false,'err','Invalid titles (max 12, 1-24 characters each).');
+  end if;
+  begin
+    perform 1 from jsonb_each_text(p_exp) e where e.value::timestamptz is null;
+  exception when others then
+    return json_build_object('ok',false,'err','Invalid expiry date.');
+  end;
+  update public.fr_users set titles = p_titles, title_exp = p_exp where username = lower(trim(p_user)) returning id into v_id;
+  if v_id is null then return json_build_object('ok',false,'err','No such user.'); end if;
+  return json_build_object('ok',true);
+end $$;
+
+create table if not exists public.fr_friends(
+  a uuid not null references public.fr_users(id) on delete cascade,
+  b uuid not null references public.fr_users(id) on delete cascade,
+  req uuid not null,
+  status text not null default 'pending' check (status in ('pending','accepted')),
+  created_at timestamptz not null default now(),
+  primary key (a,b), check (a < b));
+create table if not exists public.fr_invites(
+  id bigserial primary key,
+  to_uid uuid not null references public.fr_users(id) on delete cascade,
+  from_uid uuid not null references public.fr_users(id) on delete cascade,
+  room text not null,
+  created_at timestamptz not null default now());
+create index if not exists fr_invites_to on public.fr_invites(to_uid);
+create index if not exists fr_invites_t on public.fr_invites(created_at);
+alter table public.fr_friends enable row level security;
+alter table public.fr_invites enable row level security;
+revoke all on public.fr_friends, public.fr_invites from anon, authenticated;
+
+create or replace function public.fr_ping(p_token text, p_room text default null, p_racing boolean default false, p_off boolean default false) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_uid uuid := public.fr_uid(p_token); v_rq int; v_inv json; v_t jsonb;
+begin
+  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;
+  if p_off then
+    update public.fr_users set last_seen = now() - interval '1 hour', presence = null where id = v_uid;
+    return json_build_object('ok',true);
+  end if;
+  update public.fr_users set last_seen = now(),
+    presence = case when p_room ~ '^[0-9]{6}[A-Z]$' then jsonb_build_object('room',p_room,'racing',coalesce(p_racing,false)) else null end
+  where id = v_uid returning public.fr_active_titles(titles,title_exp) into v_t;
+  select count(*) into v_rq from public.fr_friends where status = 'pending' and req <> v_uid and v_uid in (a,b);
+  select coalesce(json_agg(json_build_object('id',i.id,'name',u.display_name,'user',u.username,'room',i.room) order by i.id),'[]'::json) into v_inv
+    from public.fr_invites i join public.fr_users u on u.id = i.from_uid
+    where i.to_uid = v_uid and i.created_at > now() - interval '10 minutes';
+  delete from public.fr_invites where created_at < now() - interval '1 hour';
+  return json_build_object('ok',true,'requests',v_rq,'invites',v_inv,'titles',v_t);
+end $$;
+
+create or replace function public.fr_search(p_token text, p_q text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_uid uuid := public.fr_uid(p_token); v_q text := lower(regexp_replace(coalesce(p_q,''),'[^A-Za-z0-9_]','','g')); v_l text; v_r json;
+begin
+  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;
+  if length(v_q) < 1 then return json_build_object('ok',true,'users','[]'::json); end if;
+  v_l := replace(v_q,'_','\_');
+  select coalesce(json_agg(r),'[]'::json) into v_r from (
+    select u.username, u.display_name as name, public.fr_active_titles(u.titles,u.title_exp) as titles,
+      coalesce(u.last_seen > now() - interval '45 seconds', false) as online,
+      case when f.status = 'accepted' then 'friend' when f.status = 'pending' and f.req = v_uid then 'sent' when f.status = 'pending' then 'received' else null end as rel
+    from public.fr_users u
+    left join public.fr_friends f on f.a = least(u.id, v_uid) and f.b = greatest(u.id, v_uid)
+    where u.id <> v_uid and (u.username like v_l || '%' or u.username like '%' || v_l || '%' or (length(v_q) >= 3 and similarity(u.username, v_q) > 0.2))
+    order by (u.username = v_q) desc, (u.username like v_l || '%') desc, similarity(u.username, v_q) desc, u.username
+    limit 8) r;
+  return json_build_object('ok',true,'users',v_r);
+end $$;
+
+create or replace function public.fr_friend_request(p_token text, p_user text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_uid uuid := public.fr_uid(p_token); v_t uuid; f public.fr_friends%rowtype;
+begin
+  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;
+  select id into v_t from public.fr_users where username = lower(trim(coalesce(p_user,'')));
+  if v_t is null then return json_build_object('ok',false,'err','No such player.'); end if;
+  if v_t = v_uid then return json_build_object('ok',false,'err','You cannot add yourself.'); end if;
+  select * into f from public.fr_friends where a = least(v_t,v_uid) and b = greatest(v_t,v_uid);
+  if not found and (select count(*) from public.fr_friends where status = 'pending' and req = v_uid) >= 50 then return json_build_object('ok',false,'err','Too many pending requests.'); end if;
+  if found then
+    if f.status = 'accepted' then return json_build_object('ok',false,'err','Already friends.'); end if;
+    if f.req = v_uid then return json_build_object('ok',false,'err','Request already sent.'); end if;
+    update public.fr_friends set status = 'accepted' where a = f.a and b = f.b;
+    return json_build_object('ok',true,'status','accepted');
+  end if;
+  insert into public.fr_friends(a,b,req) values (least(v_t,v_uid), greatest(v_t,v_uid), v_uid);
+  return json_build_object('ok',true,'status','sent');
+end $$;
+
+create or replace function public.fr_friend_respond(p_token text, p_user text, p_accept boolean) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_uid uuid := public.fr_uid(p_token); v_t uuid;
+begin
+  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;
+  select id into v_t from public.fr_users where username = lower(trim(coalesce(p_user,'')));
+  if v_t is null then return json_build_object('ok',false,'err','No such player.'); end if;
+  if p_accept then
+    update public.fr_friends set status = 'accepted' where a = least(v_t,v_uid) and b = greatest(v_t,v_uid) and status = 'pending' and req <> v_uid;
+  else
+    delete from public.fr_friends where a = least(v_t,v_uid) and b = greatest(v_t,v_uid) and status = 'pending' and req <> v_uid;
+  end if;
+  return json_build_object('ok',true);
+end $$;
+
+create or replace function public.fr_friend_remove(p_token text, p_user text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_uid uuid := public.fr_uid(p_token); v_t uuid;
+begin
+  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;
+  select id into v_t from public.fr_users where username = lower(trim(coalesce(p_user,'')));
+  if v_t is not null then delete from public.fr_friends where a = least(v_t,v_uid) and b = greatest(v_t,v_uid); end if;
+  return json_build_object('ok',true);
+end $$;
+
+create or replace function public.fr_friend_list(p_token text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_uid uuid := public.fr_uid(p_token); v_f json; v_i json; v_o json;
+begin
+  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;
+  select coalesce(json_agg(x order by x.online desc, x.name),'[]'::json) into v_f from (
+    select u.username, u.display_name as name, public.fr_active_titles(u.titles,u.title_exp) as titles,
+      coalesce(u.last_seen > now() - interval '45 seconds', false) as online,
+      case when u.last_seen > now() - interval '45 seconds' then u.presence ->> 'room' end as room,
+      coalesce((u.presence ->> 'racing')::boolean,false) as racing
+    from public.fr_friends f join public.fr_users u on u.id = case when f.a = v_uid then f.b else f.a end
+    where f.status = 'accepted' and v_uid in (f.a,f.b)) x;
+  select coalesce(json_agg(x order by x.name),'[]'::json) into v_i from (
+    select u.username, u.display_name as name, public.fr_active_titles(u.titles,u.title_exp) as titles,
+      coalesce(u.last_seen > now() - interval '45 seconds', false) as online
+    from public.fr_friends f join public.fr_users u on u.id = case when f.a = v_uid then f.b else f.a end
+    where f.status = 'pending' and f.req <> v_uid and v_uid in (f.a,f.b)) x;
+  select coalesce(json_agg(x order by x.name),'[]'::json) into v_o from (
+    select u.username, u.display_name as name, public.fr_active_titles(u.titles,u.title_exp) as titles,
+      coalesce(u.last_seen > now() - interval '45 seconds', false) as online
+    from public.fr_friends f join public.fr_users u on u.id = case when f.a = v_uid then f.b else f.a end
+    where f.status = 'pending' and f.req = v_uid and v_uid in (f.a,f.b)) x;
+  return json_build_object('ok',true,'friends',v_f,'incoming',v_i,'outgoing',v_o);
+end $$;
+
+create or replace function public.fr_invite(p_token text, p_user text, p_room text) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_uid uuid := public.fr_uid(p_token); v_t uuid;
+begin
+  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;
+  if p_room is null or p_room !~ '^[0-9]{6}[A-Z]$' then return json_build_object('ok',false,'err','You are not in a room.'); end if;
+  select u.id into v_t from public.fr_users u join public.fr_friends f on f.a = least(u.id,v_uid) and f.b = greatest(u.id,v_uid) and f.status = 'accepted'
+   where u.username = lower(trim(coalesce(p_user,''))) and u.id <> v_uid;
+  if v_t is null then return json_build_object('ok',false,'err','Not friends.'); end if;
+  delete from public.fr_invites where to_uid = v_t and from_uid = v_uid;
+  insert into public.fr_invites(to_uid,from_uid,room) values (v_t,v_uid,p_room);
+  return json_build_object('ok',true);
+end $$;
+
+create or replace function public.fr_invite_dismiss(p_token text, p_id bigint) returns json
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_uid uuid := public.fr_uid(p_token);
+begin
+  if v_uid is null then return json_build_object('ok',false,'err','session'); end if;
+  delete from public.fr_invites where id = p_id and to_uid = v_uid;
+  return json_build_object('ok',true);
+end $$;
+
+revoke all on function public.fr_active_titles(jsonb,jsonb) from public, anon, authenticated;
+revoke all on function public.fr_titles(text), public.fr_admin_stats(text), public.fr_admin_set_titles(text,text,jsonb,jsonb),
+  public.fr_ping(text,text,boolean,boolean), public.fr_search(text,text), public.fr_friend_request(text,text),
+  public.fr_friend_respond(text,text,boolean), public.fr_friend_remove(text,text), public.fr_friend_list(text),
+  public.fr_invite(text,text,text), public.fr_invite_dismiss(text,bigint) from public;
+grant execute on function public.fr_titles(text), public.fr_admin_stats(text), public.fr_admin_set_titles(text,text,jsonb,jsonb),
+  public.fr_ping(text,text,boolean,boolean), public.fr_search(text,text), public.fr_friend_request(text,text),
+  public.fr_friend_respond(text,text,boolean), public.fr_friend_remove(text,text), public.fr_friend_list(text),
+  public.fr_invite(text,text,text), public.fr_invite_dismiss(text,bigint) to anon;
+
+notify pgrst, 'reload schema';
+`;
+const cp=async(b,t)=>{try{await navigator.clipboard.writeText(t);b.textContent='COPIED ✓'}catch(e){alert('Copy failed — select the text in the box instead.')}};
+const RG=[['life','LIFETIME'],['year','YEARLY'],['month','MONTHLY'],['day','DAILY'],['hour','HOURLY']],UN={life:'month',year:'year',month:'month',day:'day',hour:'hour'},SER=[['s','Sign-ups','#ff4d4d'],['l','Sign-ins','#4da3ff'],['g','Guests','#7fd69a'],['o','Logouts','#ffb84d'],['x','Deletes','#c77dff'],['r','PW resets','#4de1d1']],MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let rng='day',sReq=0;const p2=n=>String(n).padStart(2,'0');
+function key(d,u){return d.getFullYear()+'-'+(u=='year'?'01':p2(d.getMonth()+1))+'-'+(u=='hour'||u=='day'?p2(d.getDate()):'01')+'T'+(u=='hour'?p2(d.getHours()):'00')+':00'}
+function sinceOf(r){const n=new Date(),Y=n.getFullYear(),M=n.getMonth(),D=n.getDate();return r=='hour'?new Date(Y,M,D,n.getHours()-23):r=='day'?new Date(Y,M,D-29):r=='month'?new Date(Y,M-11,1):null}
+function mkB(r,first){const n=new Date(),Y=n.getFullYear(),M=n.getMonth(),f=first?new Date(first):n,sn=sinceOf(r);let c,mk;
+ if(r=='hour'){c=24;mk=i=>new Date(sn.getFullYear(),sn.getMonth(),sn.getDate(),sn.getHours()+i)}
+ else if(r=='day'){c=30;mk=i=>new Date(sn.getFullYear(),sn.getMonth(),sn.getDate()+i)}
+ else if(r=='month'){c=12;mk=i=>new Date(Y,M-11+i,1)}
+ else if(r=='year'){c=Y-f.getFullYear()+1;mk=i=>new Date(f.getFullYear()+i,0,1)}
+ else{c=(Y-f.getFullYear())*12+M-f.getMonth()+1;mk=i=>new Date(f.getFullYear(),f.getMonth()+i,1)}
+ return Array.from({length:Math.max(1,c)},(_,i)=>{const d=mk(i);return{k:key(d,UN[r]),d,s:0,l:0,g:0,o:0,x:0,r:0}})}
+function lab(r,d,i){if(r=='hour')return[p2(d.getHours())+':00',i==0||d.getHours()==0?MO[d.getMonth()]+' '+d.getDate():''];
+ if(r=='day')return[d.getDate(),i==0||d.getDate()==1?MO[d.getMonth()]:''];if(r=='year')return[d.getFullYear(),''];
+ return[MO[d.getMonth()],i==0||d.getMonth()==0?d.getFullYear():'']}
+$('rtabs').innerHTML=RG.map(x=>`<button data-r="${x[0]}" class="${x[0]==rng?'on':''}">${x[1]}</button>`).join('');
+$('rtabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{rng=b.dataset.r;$('rtabs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x==b));loadSeries()});
+async function loadSeries(){if(!ADMIN)return;const q=++sReq,r=rng,sn=sinceOf(r);let res,fb=false,first,map={};
+ try{res=await rpc('fr_admin_series',{p_admin:ADMIN,p_unit:UN[r],p_since:sn?sn.toISOString():null,p_tz:Intl.DateTimeFormat().resolvedOptions().timeZone});if(!res||!res.ok)throw 0}catch(e){fb=true}
+ if(q!=sReq)return;
+ if(fb){const u=(DATA&&DATA.users)||[];first=u.reduce((m,x)=>!m||x.created_at<m?x.created_at:m,null);
+  const L=track(),t0=new Date(L.t0),add=(d,k,v)=>{const c=key(new Date(d),UN[r]);(map[c]=map[c]||{signups:0,logins:0,guests:0})[k]+=v};
+  u.forEach(x=>{add(x.created_at,'signups',1);if(x.logins>1&&x.last_login&&new Date(x.last_login)<t0)add(x.last_login,'logins',1)});
+  L.e.forEach(e=>add(e[0],e[1]=='g'?'guests':'logins',e[2]))}
+ else{first=res.first;(res.rows||[]).forEach(x=>map[x.b]=x)}
+ const b=mkB(r,first);let t={s:0,l:0,g:0,o:0,x:0,r:0};
+ b.forEach(x=>{const m=map[x.k]||{};x.s=+m.signups||0;x.l=+m.logins||0;x.g=+m.guests||0;x.o=+m.logouts||0;x.x=+m.deletes||0;x.r=+m.resets||0;for(const q of 'slgoxr')t[q]+=x[q];if(r=='life'){for(const q of 'slgoxr')x[q]=t[q]}});
+ $('leg').innerHTML=SER.map(s=>`<span><i style="background:${s[2]}"></i>${s[1]} <b>${t[s[0]]}</b></span>`).join('')+`<span>${r=='life'?'(running totals by month)':'(this period)'}</span>`;
+ $('aMsg').innerHTML=fb?'Old backend mode: sign-ups are exact; logins and guests are counted from the first time you opened this version (keep refreshing/leaving it open). Run the upgrade SQL later for exact history. <button class="sm" id="aUp">COPY UPGRADE SQL</button>':'';
+ if(fb)$('aUp').onclick=e=>cp(e.target,UP);
+ draw(r,b)}
+function track(){let L={g:null,l:null,e:[],t0:new Date().toISOString()};try{L=Object.assign(L,JSON.parse(localStorage.getItem('v1t_ev')||'{}'));const g=+DATA.guests||0,l=DATA.users.reduce((a,x)=>a+(+x.logins||0),0),n=new Date().toISOString();
+ if(L.g!=null&&g>L.g)L.e.push([n,'g',g-L.g]);if(L.l!=null&&l>L.l)L.e.push([n,'l',l-L.l]);L.g=g;L.l=l;localStorage.setItem('v1t_ev',JSON.stringify(L))}catch(e){}return L}
+const HID={};
+function draw(r,b){
+ const w=Math.max(300,$('chart').clientWidth||600),H=230,L=46,R=14,T=16,B=T+H,W=w,n=b.length,vis=SER.filter(s=>!HID[s[0]]);
+ const mx=Math.max(1,...b.flatMap(x=>vis.map(s=>x[s[0]]))),s0=mx/4,pw=Math.pow(10,Math.floor(Math.log10(s0))),f=s0/pw,st=Math.max(1,pw*(f<=1?1:f<=2?2:f<=5?5:10)),top=Math.ceil(mx/st)*st;
+ const X=i=>n==1?(L+W-R)/2:L+i*(W-L-R)/(n-1),Y=v=>B-v/top*H;
+ const every=Math.ceil(n/Math.floor((W-L-R)/46));
+ let o=`<svg id="lineSvg" width="${W}" height="${B+44}" viewBox="0 0 ${W} ${B+44}" style="font-family:system-ui,Arial,sans-serif;display:block;touch-action:none;user-select:none;-webkit-user-select:none">`;
+ for(let v=0;v<=top;v+=st)o+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#ffffff${v?'12':'33'}"/><text x="${L-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="#8e99a7">${v}</text>`;
+ b.forEach((x,i)=>{if(i%every==0){const lb=lab(r,x.d,i);o+=`<text x="${X(i)}" y="${B+16}" text-anchor="middle" font-size="11" fill="#cfd8e3">${lb[0]}</text><text x="${X(i)}" y="${B+30}" text-anchor="middle" font-size="9" fill="#8e99a7">${lb[1]}</text>`}});
+ vis.forEach(s=>{const k=s[0],pts=b.map((x,i)=>X(i)+','+Y(x[k])).join(' ');
+  o+=`<polyline points="${pts}" fill="none" stroke="${s[2]}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  if(n<=40)b.forEach((x,i)=>{o+=`<circle cx="${X(i)}" cy="${Y(x[k])}" r="2.6" fill="${s[2]}"/>`})});
+ o+=`<g id="cur" style="display:none"><line id="curL" y1="${T}" y2="${B}" stroke="#fff" stroke-opacity=".55" stroke-dasharray="3 3"/>${vis.map(s=>`<circle data-k="${s[0]}" r="5.5" fill="${s[2]}" stroke="#fff" stroke-width="1.5"/>`).join('')}</g></svg>`;
+ const lg=`<div class="lgd">${SER.map(s=>`<span data-k="${s[0]}" class="${HID[s[0]]?'off':''}"><i style="background:${s[2]}"></i>${s[1]}</span>`).join('')}</div>`;
+ $('chart').innerHTML=`<div style="position:relative">${lg}${o}</div>`;
+ $('chart').querySelectorAll('.lgd span').forEach(e=>e.onclick=()=>{HID[e.dataset.k]=!HID[e.dataset.k];draw(r,b)});
+ const svg=$('lineSvg'),tip=$('tip'),cur=$('cur');
+ const show=ev=>{const rc=svg.getBoundingClientRect(),px=(ev.clientX-rc.left)*(W/rc.width);let i=n==1?0:Math.round((px-L)/((W-L-R)/(n-1)));i=Math.max(0,Math.min(n-1,i));const x=b[i],lb=lab(r,x.d,i);
+  cur.style.display='';$('curL').setAttribute('x1',X(i));$('curL').setAttribute('x2',X(i));cur.querySelectorAll('circle').forEach(c=>{c.setAttribute('cx',X(i));c.setAttribute('cy',Y(x[c.dataset.k]))});
+  const when=(r=='hour'?x.d.toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):r=='year'?x.d.getFullYear():r=='day'?x.d.toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'}):x.d.toLocaleDateString([],{month:'long',year:'numeric'}));
+  tip.innerHTML=`<div class="tt">${when}</div>`+SER.map(s=>`<div class="tr${HID[s[0]]?' off':''}"><i style="background:${s[2]}"></i><span>${s[1]}</span><b>${x[s[0]]}</b></div>`).join('');tip.classList.add('on')};
+ const hide=()=>{cur.style.display='none';tip.classList.remove('on')};
+ svg.addEventListener('pointerdown',e=>{try{svg.setPointerCapture(e.pointerId)}catch(_){}show(e)});
+ svg.addEventListener('pointermove',show);svg.addEventListener('pointerleave',e=>{if(!e.buttons)hide()});
+ ['pointerup','pointercancel'].forEach(n2=>svg.addEventListener(n2,hide))}
+
+
+const PRE=['DEV','FOUNDER','TESTER','CHAMPION','VIP','LEGEND'];
+const onl=x=>x.online!==undefined?!!x.online:(!!x.last_seen&&Date.now()-new Date(x.last_seen)<45e3),dot=x=>`<i class="dot${onl(x)?' on':''}" title="${onl(x)?'Online':'Offline'}"></i>`;
+function chips(a){return(Array.isArray(a)?a:[]).map(t=>`<span class="ttl${t==='DEV'?' dev':''}">${esc(t)}</span>`).join('')}
+const DUR=[['keep','Keep current'],['perm','Permanent'],['3600000','1 hour'],['86400000','1 day'],['604800000','7 days'],['2592000000','30 days'],['custom','Until date…']];
+function showGift(u){const x=DATA.users.find(z=>z.username===u);if(!x)return;const pv=$('pv'),body=$('pvBody'),E=x.title_exp||{},a0=Array.isArray(x.titles)?x.titles:[];pv.classList.add('open');
+ const S={};[...PRE,...a0].forEach(t=>{if(!S[t])S[t]={on:a0.includes(t),exp:E[t]||null,mode:a0.includes(t)?'keep':'perm',cv:''}});
+ const fx=v=>new Date(v).toLocaleString([],{dateStyle:'medium',timeStyle:'short'});
+ const build=()=>{const titles=[],exp={};for(const t in S){const s=S[t];if(!s.on)continue;titles.push(t);let e=null;if(s.mode==='keep')e=s.exp;else if(s.mode==='perm')e=null;else if(s.mode==='custom'){const d=new Date(s.cv);if(!s.cv||isNaN(d)||d<=Date.now())throw new Error('Pick a future date for '+t);e=d.toISOString()}else e=new Date(Date.now()+Number(s.mode)).toISOString();if(e)exp[t]=e}return{titles,exp}};
+ const save=async m=>{try{const r0=build(),r=await rpc('fr_admin_set_titles',{p_admin:ADMIN,p_user:u,p_titles:r0.titles,p_exp:r0.exp});if(!r.ok)throw new Error(r.err||'Failed');x.titles=r0.titles;x.title_exp=r0.exp;for(const t in S){S[t].exp=r0.exp[t]||null;S[t].mode=S[t].on?'keep':'perm';S[t].cv=''}apply(DATA);draw(m||'Saved ✓')}catch(e){draw(/404|400|Server error/.test(e.message)?'Run the UPGRADE SQL once (Setup guide → COPY UPGRADE ONLY) to enable this.':e.message,1)}};
+ const draw=(msg,bad)=>{body.innerHTML=`<div class="ph"><div class="av">🎁</div><div><h2 style="margin:0;font-size:22px;text-transform:none;color:var(--ink)">Gift titles</h2><small>${esc(x.display_name)} · @${esc(u)}</small></div><span class="sp"></span><button class="sm" id="gX">CLOSE</button></div>
+  ${Object.keys(S).map(t=>{const s=S[t];return`<div class="gr"><label class="gk"><input type="checkbox" class="ck" data-t="${esc(t)}" ${s.on?'checked':''}><span class="ttl${t==='DEV'?' dev':''}">${esc(t)}</span></label><small>${s.on?(s.exp?'until '+fx(s.exp):'permanent'):'not given'}</small><select data-t="${esc(t)}" title="Duration">${DUR.map(d=>`<option value="${d[0]}"${s.mode===d[0]?' selected':''}>${d[1]}</option>`).join('')}</select>${s.mode==='custom'?`<input type="datetime-local" class="dt" data-t="${esc(t)}" value="${esc(s.cv)}">`:''}${s.on?`<button class="sm d" data-tb="${esc(t)}">TAKE BACK</button>`:''}</div>`}).join('')}
+  <div class="tools" style="margin:12px 0 0"><input id="gC" maxlength="24" placeholder="Custom title…" autocomplete="off"><button class="sm" id="gA">ADD</button></div>
+  <div class="msg${bad?' bad':''}" id="gM">${esc(msg||'Pick a duration, tick to give, then SAVE. TAKE BACK removes a title immediately.')}</div><button class="p" id="gS">SAVE &amp; GIFT</button>`;
+  $('gX').onclick=()=>pv.classList.remove('open');
+  body.querySelectorAll('input.ck').forEach(c=>c.onchange=()=>{S[c.dataset.t].on=c.checked;draw()});
+  body.querySelectorAll('select').forEach(c=>c.onchange=()=>{const s=S[c.dataset.t];s.mode=c.value;if(c.value!=='keep')s.on=true;draw()});
+  body.querySelectorAll('input.dt').forEach(c=>c.onchange=()=>{S[c.dataset.t].cv=c.value});
+  body.querySelectorAll('[data-tb]').forEach(c=>c.onclick=()=>{S[c.dataset.tb].on=false;save('Took back '+c.dataset.tb+' ✓')});
+  const add=()=>{const v=$('gC').value.toUpperCase().replace(/[^A-Z0-9 _.!-]/g,'').replace(/\s+/g,' ').trim().slice(0,24);if(!v)return;S[v]=S[v]||{on:true,exp:null,mode:'perm',cv:''};S[v].on=true;draw()};
+  $('gA').onclick=add;$('gC').addEventListener('keydown',e=>{if(e.key==='Enter')add()});$('gS').onclick=()=>{$('gS').disabled=true;save()}};
+ draw()}
+
+function lev(a,b){const m=[...Array(a.length+1)].map((_,i)=>[i]);for(let j=1;j<=b.length;j++)m[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return m[a.length][b.length]}
+function gsFind(q){q=q.trim().toLowerCase();if(!q||!DATA)return[];return DATA.users.map(u=>{const n=u.username,d=(u.display_name||'').toLowerCase(),e=(u.email||'').toLowerCase();const s=n===q?0:n.startsWith(q)?1:d.startsWith(q)?2:(n.includes(q)||d.includes(q))?3:e.includes(q)?4:(q.length>=3&&(lev(n,q)<=2||lev(n.slice(0,q.length),q)<=1))?5:9;return{u,s}}).filter(x=>x.s<9).sort((a,b)=>a.s-b.s||a.u.username.localeCompare(b.u.username)).slice(0,8).map(x=>x.u)}
+(function(){const q=$('gq'),l=$('gsl');let res=[],k=-1;const hide=()=>{l.hidden=true;k=-1};
+ const pick=u=>{hide();q.value='';showProfile(u.username)};
+ const draw=()=>{res=gsFind(q.value);if(!res.length){l.hidden=true;return}l.hidden=false;l.innerHTML=res.map((u,i)=>`<div data-i="${i}" class="${i===k?'sel':''}">${dot(u)}<b>${esc(u.display_name)}</b>${chips(u.titles)}<small>@${esc(u.username)}</small></div>`).join('')};
+ q.oninput=()=>{k=-1;draw()};q.onfocus=draw;
+ q.onkeydown=e=>{if(e.key==='ArrowDown'){k=Math.min(k+1,res.length-1);draw();e.preventDefault()}else if(e.key==='ArrowUp'){k=Math.max(k-1,0);draw();e.preventDefault()}else if(e.key==='Enter'){const u=res[k<0?0:k];if(u)pick(u)}else if(e.key==='Escape'){q.value='';hide()}};
+ l.onmousedown=e=>{const d=e.target.closest('[data-i]');if(d){e.preventDefault();pick(res[+d.dataset.i])}};
+ document.addEventListener('click',e=>{if(!e.target.closest('.gs'))hide()})})();
+const COLS=[['username','Account'],['email','Email'],['created_at','Joined'],['last_login','Last login'],['logins','Logins'],['progress_updated','Progress saved'],['progress_bytes','Data']];
+const fd=d=>d?new Date(d).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}):'—',fb=n=>n?(n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB'):'—';
+function apply(r){DATA=r;const u=r.users,now=Date.now(),d1=u.filter(x=>x.last_seen&&now-new Date(x.last_seen)<864e5).length,d7=u.filter(x=>now-new Date(x.created_at)<6048e5).length;
+ $('stats').innerHTML=[['Accounts',u.length,'registered players'],['Guest sessions',r.guests,'anonymous counter only'],['Active (24h)',d1,'accounts seen in the last day'],['New (7 days)',d7,'accounts created this week']].map(s=>`<div class="card stat"><small>${s[0]}</small><b>${esc(s[1])}</b><span>${s[2]}</span></div>`).join('');
+ $('thead').innerHTML=COLS.map(c=>`<th data-k="${c[0]}">${c[1]}${sortK==c[0]?(sortD>0?' ▲':' ▼'):''}</th>`).join('')+'<th></th>';
+ $('thead').querySelectorAll('th[data-k]').forEach(th=>th.onclick=()=>{const k=th.dataset.k;sortD=sortK==k?-sortD:1;sortK=k;apply(DATA)});
+ const q=$('q').value.trim().toLowerCase();let rows=u.filter(x=>!q||x.username.includes(q)||x.email.toLowerCase().includes(q));
+ rows.sort((a,b)=>{let x=a[sortK],y=b[sortK];if(x==null)x='';if(y==null)y='';return(x>y?1:x<y?-1:0)*sortD});
+ $('tbody').innerHTML=rows.length?rows.map(x=>`<tr data-u="${esc(x.username)}"><td><div class="nm">${dot(x)}<button class="sm ic" data-a="prof" data-u="${esc(x.username)}" title="Open account data">👤</button><b>${esc(x.display_name)}</b>${chips(x.titles)}<button class="sm ic" data-a="gift" data-u="${esc(x.username)}" title="Gift titles">🎁</button></div></td><td class="m">${esc(x.email)}</td><td class="m">${fd(x.created_at)}</td><td class="m">${fd(x.last_login)}</td><td>${x.logins}</td><td class="${x.progress_updated?'ok':'m'}">${fd(x.progress_updated)}</td><td class="m">${fb(x.progress_bytes)}</td><td class="a"><button class="sm" data-a="pw" data-u="${esc(x.username)}">RESET PW</button><button class="sm d" data-a="del" data-u="${esc(x.username)}">DELETE</button></td></tr>`).join(''):`<tr><td colspan="8" class="empty">${u.length?'No matches.':'No accounts yet. They will appear here as players sign up.'}</td></tr>`;
+ $('tbody').querySelectorAll('button').forEach(b=>b.onclick=e=>{e.stopPropagation();act(b.dataset.a,b.dataset.u)});
+ $('upd').textContent='Updated '+new Date().toLocaleTimeString()}
+$('q').oninput=()=>DATA&&apply(DATA);
+async function unpack(p){if(!p)return null;if(!p.z)return JSON.parse(p.d);const b=atob(p.d),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);
+ return JSON.parse(await new Response(new Blob([a]).stream().pipeThrough(new DecompressionStream('gzip'))).text())}
+const tf=v=>{if(!(v>0))return '—';const m=Math.floor(v/60),s=v-m*60;return m+':'+(s<10?'0':'')+s.toFixed(3)};
+async function showProfile(u){const pv=$('pv'),body=$('pvBody');pv.classList.add('open');body.innerHTML='<div class="empty">Loading profile…</div>';
+ const close='<button class="sm" id="pvX">CLOSE</button>';
+ try{const r=await rpc('fr_admin_progress',{p_admin:ADMIN,p_user:u});if(!r.ok)throw new Error(r.err||'Failed');
+  const X=(DATA&&DATA.users.find(z=>z.username===u))||{},ci=(v,l)=>`<div class="c2"><b style="font-size:14px;word-break:break-all">${v}</b><span>${l}</span></div>`,info=`<div class="cards" style="margin-bottom:12px">${ci(esc(X.email||'—'),'Email')}${ci(fd(X.created_at),'Joined')}${ci(fd(X.last_login),'Last login')}${ci(X.logins|0,'Logins')}${ci(fb(X.progress_bytes),'Saved data')}${ci(chips(X.titles)||'—','Titles')}</div>`;
+  const d=await unpack(r.progress)||{},raw=d.fr_stats_v1;let S=null;try{S=raw?JSON.parse(raw):null}catch(e){}
+  const head=`<div class="ph"><div class="av">${esc((r.name||u)[0].toUpperCase())}</div><div><h2 style="margin:0;font-size:22px;text-transform:none;color:var(--ink)">${esc(r.name||u)}</h2><small>@${esc(u)}</small></div><span class="sp"></span>${close}</div>`;
+  if(!S){body.innerHTML=head+info+'<div class="empty">No race stats saved for this player yet. Stats appear after they play with the latest game version while logged in.</div>';$('pvX').onclick=()=>pv.classList.remove('open');return}
+  const n=k=>+S[k]||0,rate=n('races')?Math.round(n('wins')/n('races')*1000)/10:0,avg=n('finishes')?'P'+(n('posSum')/n('finishes')).toFixed(1):'—';
+  const T=Object.values(S.tracks||{}).filter(t=>t.best||t.races||t.poles).sort((a,b)=>a.n.localeCompare(b.n));
+  const c=(v,l)=>`<div class="c2"><b>${v}</b><span>${l}</span></div>`;
+  body.innerHTML=head+info+`<div class="cards">${c(n('races'),'Races')}${c(n('wins'),'Wins')}${c(rate+'%','Win rate')}${c(n('podiums'),'Podiums')}${c(n('poles'),'Poles')}${c(n('lapsLed'),'Laps led')}${c(T.filter(t=>t.best).length,'Track records')}${c(n('dnfs'),'DNFs')}${c(n('laps'),'Laps driven')}${c(n('bestFinish')?'P'+n('bestFinish'):'—','Best finish')}${c(avg,'Avg finish')}</div>
+  <h2 style="margin-top:16px">Fastest times by track</h2>${T.length?`<div class="tw"><table><thead><tr><th>Track</th><th>Fastest lap</th><th>Best quali</th><th>Poles</th><th>Wins</th><th>Podiums</th><th>Races</th><th>Laps led</th></tr></thead><tbody>${T.map(t=>`<tr><td>${esc(t.n)}</td><td>${tf(t.best)}</td><td>${tf(t.bestQ)}</td><td>${t.poles|0}</td><td>${t.wins|0}</td><td>${t.podiums|0}</td><td>${t.races|0}</td><td>${t.lapsLed|0}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No laps recorded yet.</div>'}`;
+  $('pvX').onclick=()=>pv.classList.remove('open')}
+ catch(e){const miss=/404|400|Server error/.test(e.message);body.innerHTML=`<div class="ph"><h2 style="margin:0">Profile</h2><span class="sp"></span>${close}</div><div class="msg bad">${esc(miss?'Could not load. Run the UPGRADE SQL once (Setup guide → COPY UPGRADE ONLY) to enable player profiles.':e.message)}</div>`;$('pvX').onclick=()=>pv.classList.remove('open')}}
+$('pv').addEventListener('click',e=>{if(e.target.id==='pv')$('pv').classList.remove('open')});
+async function act(a,u){if(a==='prof')return showProfile(u);if(a==='gift')return showGift(u);try{if(a==='del'){if(!confirm('Permanently delete account "'+u+'" and its saved progress?'))return;const r=await rpc('fr_admin_delete_user',{p_admin:ADMIN,p_user:u});if(!r.ok)throw new Error(r.err)}
+ else{const p=prompt('New password for "'+u+'" (at least 8 characters). You will have to tell the player.');if(!p)return;if(p.length<8)return alert('At least 8 characters.');const r=await rpc('fr_admin_reset_pw',{p_admin:ADMIN,p_user:u,p_hash:await hashPw(u,p)});if(!r.ok)throw new Error(r.err);alert('Password changed. The player is logged out everywhere.')}
+ refresh()}catch(e){alert(e.message||'Failed')}}
+$('csvBtn').onclick=()=>{if(!DATA)return;const c=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"',h=['username','email','created_at','last_login','logins','progress_updated','progress_bytes','titles'];
+ const t=[h.join(',')].concat(DATA.users.map(x=>h.map(k=>c(k=='titles'?(x.titles||[]).join('|'):x[k])).join(','))).join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv'}));a.download='formular-accounts.csv';a.click()};
+</script></body></html>
